@@ -43,6 +43,24 @@ test: ## Send test events to producer
 	chmod +x test-producer.sh
 	./test-producer.sh 100
 
+.PHONY: test-unit
+test-unit: ## Run unit tests for all services
+	@echo "Running producer unit tests..."
+	cd producer && go test -v -cover ./...
+	@echo "\nRunning consumer unit tests..."
+	cd consumer && go test -v -cover ./...
+
+.PHONY: test-producer-unit
+test-producer-unit: ## Run unit tests for producer service
+	cd producer && go test -v -cover ./...
+
+.PHONY: test-consumer-unit
+test-consumer-unit: ## Run unit tests for consumer service
+	cd consumer && go test -v -cover ./...
+
+.PHONY: test-all
+test-all: test-unit test ## Run all tests (unit + integration)
+
 .PHONY: metrics
 metrics: ## View metrics from database
 	docker exec -it postgres psql -U postgres -d analytics -c "SELECT * FROM user_activity_metrics ORDER BY created_at DESC LIMIT 20;"

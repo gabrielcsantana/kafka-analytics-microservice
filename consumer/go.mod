@@ -3,8 +3,10 @@ module consumer
 go 1.21
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/lib/pq v1.10.9
 	github.com/segmentio/kafka-go v0.4.47
+	github.com/stretchr/testify v1.8.4
 )
 
 require (

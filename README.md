@@ -151,27 +151,44 @@ docker-compose up --scale consumer=3
 
 ## Testing
 
-### Generate sample traffic
+### Unit Tests
+
+The project includes comprehensive unit tests for both services. See [TESTING.md](TESTING.md) for detailed testing documentation.
+
+```bash
+# Run all unit tests
+make test-unit
+
+# Run producer tests only
+make test-producer-unit
+
+# Run consumer tests only
+make test-consumer-unit
+
+# Run with coverage
+cd producer && go test -v -cover ./...
+cd consumer && go test -v -cover ./...
+```
+
+**Test Coverage:**
+- ✅ JSON marshaling/unmarshaling
+- ✅ Activity processing and aggregation
+- ✅ Database operations with retry logic
+- ✅ HTTP endpoint validation
+- ✅ Concurrent access safety
+- ✅ Environment variable parsing
+- ✅ Error handling
+
+### Integration Tests
 
 Use the provided script to generate sample user activity:
 
 ```bash
 # Send 100 random user activities
-for i in {1..100}; do
-  USER_ID=$((1 + RANDOM % 1000))
-  curl -X POST http://localhost:8080/activity \
-    -H "Content-Type: application/json" \
-    -d "{
-      \"user_id\": \"user_${USER_ID}\",
-      \"activity_type\": \"page_view\",
-      \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
-      \"metadata\": {
-        \"page_url\": \"https://example.com/page${i}\",
-        \"referrer\": \"https://google.com\"
-      }
-    }"
-  sleep 0.1
-done
+make test
+
+# Or use the script directly
+./test-producer.sh 100
 ```
 
 ## Monitoring
