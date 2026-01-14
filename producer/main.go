@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -11,56 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/segmentio/kafka-go"
 )
-
-type UserActivity struct {
-	UserID       string   `json:"user_id" binding:"required"`
-	ActivityType string   `json:"activity_type" binding:"required"`
-	Timestamp    string   `json:"timestamp" binding:"required"`
-	Metadata     Metadata `json:"metadata" binding:"required"`
-}
-
-type Metadata struct {
-	PageURL  string `json:"page_url" binding:"required"`
-	Referrer string `json:"referrer"`
-}
-
-type Producer struct {
-	writer *kafka.Writer
-}
-
-func NewProducer(brokers []string, topic string) *Producer {
-	writer := &kafka.Writer{
-		Addr:                   kafka.TCP(brokers...),
-		Topic:                  topic,
-		Balancer:               &kafka.LeastBytes{},
-		AllowAutoTopicCreation: true,
-		WriteTimeout:           10 * time.Second,
-		ReadTimeout:            10 * time.Second,
-		MaxAttempts:            3,
-	}
-
-	return &Producer{writer: writer}
-}
-
-func (p *Producer) PublishActivity(ctx context.Context, activity UserActivity) error {
-	messageBytes, err := json.Marshal(activity)
-	if err != nil {
-		return err
-	}
-
-	err = p.writer.WriteMessages(ctx, kafka.Message{
-		Key:   []byte(activity.UserID),
-		Value: messageBytes,
-	})
-
-	return err
-}
-
-func (p *Producer) Close() error {
-	return p.writer.Close()
-}
 
 func main() {
 	// Configuration from environment variables
@@ -129,11 +79,4 @@ func main() {
 	}
 
 	log.Println("Producer server exited")
-}
-
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
 }

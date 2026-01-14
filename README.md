@@ -17,6 +17,26 @@ The system consists of two main microservices:
 - **Producer**: Go microservice with REST API
 - **Consumer**: Go microservice with horizontal scaling support
 
+### Code Organization
+
+The codebase follows Go best practices with clear separation of concerns:
+
+**Producer Service:**
+- `main.go` - HTTP server and application entry point
+- `models.go` - Data structures (UserActivity, Metadata)
+- `producer.go` - Kafka publishing logic
+- `utils.go` - Helper functions
+
+**Consumer Service:**
+- `main.go` - Application entry point
+- `models.go` - Data structures
+- `consumer.go` - Kafka consumption and worker management
+- `aggregator.go` - Metrics aggregation logic
+- `db.go` - Database operations
+- `utils.go` - Helper functions
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architecture documentation.
+
 ## Features
 
 - ✅ REST API endpoint for publishing user activity events
